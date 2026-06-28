@@ -15,7 +15,8 @@ const GAME_STATE = {
     life: 3,
     records: [], // For the test paper
     
-    currentQuestionData: null // { qStr, answer }
+    currentQuestionData: null, // { qStr, answer }
+    isProcessing: false // Prevent multiple clicks
 };
 
 const ADJECTIVES = ['漂亮的', '聰明的', '調皮的', '可愛的', '勇敢的', '快樂的', '害羞的', '神奇的'];
@@ -112,6 +113,7 @@ function startGame() {
     GAME_STATE.score = 0;
     GAME_STATE.life = 3;
     GAME_STATE.records = [];
+    GAME_STATE.isProcessing = false;
 
     // UI Updates
     document.getElementById('life-container').style.display = GAME_STATE.ruleLife ? 'block' : 'none';
@@ -218,6 +220,7 @@ function generateQuestion() {
 }
 
 function nextQuestion() {
+    GAME_STATE.isProcessing = false;
     updateGameUI();
     const qData = generateQuestion();
     GAME_STATE.currentQuestionData = qData;
@@ -269,6 +272,7 @@ function renderChoices(correctAnswer) {
 // --- INPUT HANDLING ---
 let currentFillInput = '';
 function handleVKInput(e) {
+    if (GAME_STATE.isProcessing) return;
     const key = e.target.getAttribute('data-key');
     const display = document.getElementById('fill-display');
     
@@ -289,6 +293,9 @@ function handleVKInput(e) {
 }
 
 function handleAnswer(userAnsStr) {
+    if (GAME_STATE.isProcessing) return;
+    GAME_STATE.isProcessing = true;
+
     const correctAns = GAME_STATE.currentQuestionData.answer;
     // Compare as float to avoid string mismatch (e.g. "2.5" vs "2.50")
     const userAnsNum = parseFloat(userAnsStr);
