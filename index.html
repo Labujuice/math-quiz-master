@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>小朋友趣味數學挑戰</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Noto+Sans+TC:wght@400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Background Music -->
+    <!-- Using a placeholder royalty free music link. You can replace this with your own audio file -->
+    <audio id="bgm" loop>
+        <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=happy-kids-112613.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="music-control no-print">
+        <button id="bgm-toggle" class="btn-icon">🔇 音樂關</button>
+    </div>
+
+    <div id="app-container">
+        <!-- Setup Screen -->
+        <section id="setup-screen" class="screen active no-print">
+            <h1 class="title">🎈 趣味數學挑戰 🎈</h1>
+            
+            <div class="card setup-form">
+                <div class="form-group">
+                    <label>📝 你的名字：</label>
+                    <input type="text" id="player-name" placeholder="請輸入名字 (不填會自動產生喔)" maxlength="15">
+                </div>
+
+                <div class="form-group">
+                    <label>🔢 題型 (至少選一個)：</label>
+                    <div class="checkbox-group checkbox-large">
+                        <label><input type="checkbox" name="op" value="+" checked> <span class="chk-btn">➕ 加法</span></label>
+                        <label><input type="checkbox" name="op" value="-"> <span class="chk-btn">➖ 減法</span></label>
+                        <label><input type="checkbox" name="op" value="*"> <span class="chk-btn">✖️ 乘法</span></label>
+                        <label><input type="checkbox" name="op" value="/"> <span class="chk-btn">➗ 除法</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>🌟 難易度 (數字大小)：</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="difficulty" value="1" checked> <span class="rad-btn">1 位數</span></label>
+                        <label><input type="radio" name="difficulty" value="2"> <span class="rad-btn">2 位數</span></label>
+                        <label><input type="radio" name="difficulty" value="3"> <span class="rad-btn">3 位數</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>⚙️ 進階規則：</label>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="rule-life" checked> <span class="chk-btn">❤️ 啟用生命值 (3顆星)</span></label>
+                        <label><input type="checkbox" id="rule-neg-q"> <span class="chk-btn">➖ 題目可包含負數</span></label>
+                        <label><input type="checkbox" id="rule-neg-a"> <span class="chk-btn">📉 答案可以是負數</span></label>
+                        <label><input type="checkbox" id="rule-dec"> <span class="chk-btn">.️⃣ 除法支援小數點 (到第一位)</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>✍️ 答題方式：</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="inputMode" value="choice" checked> <span class="rad-btn">🔘 選擇題</span></label>
+                        <label><input type="radio" name="inputMode" value="fill"> <span class="rad-btn">⌨️ 填充題</span></label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>⏱️ 挑戰模式：</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gameMode" value="10" checked> <span class="rad-btn">10 題</span></label>
+                        <label><input type="radio" name="gameMode" value="20"> <span class="rad-btn">20 題</span></label>
+                        <label><input type="radio" name="gameMode" value="30"> <span class="rad-btn">30 題</span></label>
+                        <label><input type="radio" name="gameMode" value="infinite"> <span class="rad-btn">無限挑戰</span></label>
+                    </div>
+                </div>
+
+                <button id="btn-start" class="btn-primary btn-large">🚀 開始挑戰！</button>
+            </div>
+        </section>
+
+        <!-- Game Screen -->
+        <section id="game-screen" class="screen no-print">
+            <div class="game-header card">
+                <div class="stats">
+                    <div class="stat-item" id="life-container">❤️❤️❤️</div>
+                    <div class="stat-item score-disp">積分: <span id="current-score">0</span></div>
+                    <div class="stat-item progress-disp">第 <span id="current-q-num">1</span> 題 <span id="total-q-num">/ 10</span></div>
+                </div>
+                <button id="btn-end-early" class="btn-danger btn-small" style="display: none;">⏹️ 結束測驗</button>
+            </div>
+
+            <div class="question-board card">
+                <div id="question-text">1 + 1 = ?</div>
+            </div>
+
+            <div id="input-area" class="input-area">
+                <!-- Choice Mode Container -->
+                <div id="choice-container" class="choice-grid" style="display: none;">
+                    <button class="btn-choice" data-index="0"></button>
+                    <button class="btn-choice" data-index="1"></button>
+                    <button class="btn-choice" data-index="2"></button>
+                    <button class="btn-choice" data-index="3"></button>
+                </div>
+
+                <!-- Fill Mode Container -->
+                <div id="fill-container" class="fill-layout" style="display: none;">
+                    <div class="fill-display" id="fill-display"></div>
+                    <div class="virtual-keyboard">
+                        <button class="vk-btn" data-key="1">1</button>
+                        <button class="vk-btn" data-key="2">2</button>
+                        <button class="vk-btn" data-key="3">3</button>
+                        <button class="vk-btn" data-key="4">4</button>
+                        <button class="vk-btn" data-key="5">5</button>
+                        <button class="vk-btn" data-key="6">6</button>
+                        <button class="vk-btn" data-key="7">7</button>
+                        <button class="vk-btn" data-key="8">8</button>
+                        <button class="vk-btn" data-key="9">9</button>
+                        <button class="vk-btn" data-key="-">-</button>
+                        <button class="vk-btn" data-key="0">0</button>
+                        <button class="vk-btn" data-key=".">.</button>
+                        <button class="vk-btn vk-action" data-key="backspace">⬅️</button>
+                        <button class="vk-btn vk-submit" data-key="enter">送出</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="feedback-overlay" class="feedback-overlay">
+                <div id="feedback-icon"></div>
+            </div>
+        </section>
+
+        <!-- Result / Paper Screen -->
+        <section id="result-screen" class="screen paper-bg">
+            <div class="paper-header">
+                <h2>🏆 測驗考卷 🏆</h2>
+                <div class="paper-info">
+                    <span>姓名：<span id="paper-name"></span></span>
+                    <span>時間：<span id="paper-time"></span></span>
+                    <span class="paper-score-box">分數：<span id="paper-score"></span> / 100</span>
+                </div>
+            </div>
+
+            <div class="paper-body">
+                <table class="paper-table">
+                    <thead>
+                        <tr>
+                            <th>題號</th>
+                            <th>題目</th>
+                            <th>你的答案</th>
+                            <th>正確答案</th>
+                            <th>批改</th>
+                        </tr>
+                    </thead>
+                    <tbody id="paper-tbody">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="paper-footer no-print">
+                <div class="leaderboard card">
+                    <h3>🎖️ 英雄榜 (Top 10)</h3>
+                    <table class="lb-table">
+                        <thead>
+                            <tr>
+                                <th>名次</th>
+                                <th>名字</th>
+                                <th>積分</th>
+                                <th>時間</th>
+                            </tr>
+                        </thead>
+                        <tbody id="lb-tbody">
+                            <!-- JS injected -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="action-buttons">
+                    <button id="btn-print" class="btn-primary btn-large">🖨️ 列印考卷 (PDF)</button>
+                    <button id="btn-restart" class="btn-secondary btn-large">🔄 再玩一次</button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Using ES modules -->
+    <script type="module" src="app.js"></script>
+</body>
+</html>
