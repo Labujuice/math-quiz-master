@@ -1,5 +1,7 @@
 # Math Quiz Master (小朋友趣味數學挑戰網頁)
 
+🔗 **[線上體驗 (Live Demo) 點此前往](https://labujuice.github.io/math-quiz-master/)**
+
 這是一個專為兒童設計的隨機數學挑戰練習網頁，旨在透過趣味的扁平化介面、精美的視覺回饋與豐富的遊戲化機制（生命值、動態積分排行），提升小朋友學習數學的興趣。本系統為 100% 純前端靜態網頁，無須任何後端伺服器或資料庫，可直接以瀏覽器本地開啟或部署於 GitHub Pages 平台。
 
 ## ✨ 特色功能
@@ -57,7 +59,7 @@
 2. 前往該儲存庫的 **Settings** > **Pages**。
 3. 將 **Source** 改為 `Deploy from a branch`。
 4. 選擇您的主分支（例如 `main` 或 `master`）並點擊 **Save**。
-5. 數分鐘後即可透過專屬網址點入訪問。
+5. 數分鐘後即可透過專屬網址點入訪問（例如：[https://labujuice.github.io/math-quiz-master/](https://labujuice.github.io/math-quiz-master/)）。
 
 ## 📜 授權條款
 
