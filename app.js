@@ -12,6 +12,7 @@ const GAME_STATE = {
     
     currentQ: 1,
     score: 0, // Leaderboard score
+    paperScore: 0,
     life: 3,
     records: [], // For the test paper
     
@@ -314,9 +315,9 @@ function handleAnswer(userAnsStr) {
     if (isCorrect) {
         showFeedback(true);
         // Score calculation (difficulty & operation multiplier)
-        let baseScore = GAME_STATE.difficulty * 10; // 1位數:10, 2位數:20, 3位數:30
-        let opMultiplier = (GAME_STATE.currentQuestionData.op === '*' || GAME_STATE.currentQuestionData.op === '/') ? 2 : 1; // 乘除加倍
-        GAME_STATE.score += baseScore * opMultiplier;
+        let diffMultiplier = GAME_STATE.difficulty === 3 ? 2 : (GAME_STATE.difficulty === 2 ? 1.5 : 1);
+        let opMultiplier = (GAME_STATE.currentQuestionData.op === '*' || GAME_STATE.currentQuestionData.op === '/') ? 1.5 : 1;
+        GAME_STATE.score += 1 * diffMultiplier * opMultiplier;
     } else {
         showFeedback(false);
         if (GAME_STATE.ruleLife) {
@@ -395,6 +396,7 @@ function generatePaper() {
     
     const correctCount = GAME_STATE.records.filter(r => r.isCorrect).length;
     const paperScore = Math.round((correctCount / totalQuestions) * 100);
+    GAME_STATE.paperScore = paperScore;
     document.getElementById('paper-score').textContent = paperScore;
 
     // Render Table
@@ -430,6 +432,7 @@ function saveLeaderboard() {
     const record = {
         name: GAME_STATE.playerName,
         score: GAME_STATE.score,
+        paperScore: GAME_STATE.paperScore,
         time: timeStr
     };
 
@@ -452,8 +455,8 @@ function renderLeaderboard() {
     
     const lb = JSON.parse(localStorage.getItem('mathQuizLeaderboard') || '[]');
     if (lb.length === 0) {
-        tbodyMain.innerHTML = '<tr><td colspan="4">目前還沒有紀錄喔！</td></tr>';
-        tbodyResult.innerHTML = '<tr><td colspan="4">目前還沒有紀錄喔！</td></tr>';
+        tbodyMain.innerHTML = '<tr><td colspan="5">目前還沒有紀錄喔！</td></tr>';
+        tbodyResult.innerHTML = '<tr><td colspan="5">目前還沒有紀錄喔！</td></tr>';
         return;
     }
 
@@ -462,6 +465,7 @@ function renderLeaderboard() {
             <td>${idx + 1}</td>
             <td>${item.name}</td>
             <td>${item.score}</td>
+            <td>${item.paperScore !== undefined ? item.paperScore : '-'}</td>
             <td>${item.time}</td>
         `;
         
