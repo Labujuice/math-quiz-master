@@ -11,10 +11,9 @@
 </head>
 <body>
     <!-- Background Music -->
-    <!-- Using a placeholder royalty free music link. You can replace this with your own audio file -->
     <audio id="bgm" loop>
-        <!-- 更換為可愛柔和風的背景音樂 -->
-        <source src="https://cdn.pixabay.com/download/audio/2022/10/18/audio_31c2730ebb.mp3?filename=cute-and-fun-kids-122416.mp3" type="audio/mpeg">
+        <!-- 使用維基百科可靠的開源音樂 (Tetris Theme) 以確保可以跨網域讀取 -->
+        <source src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg" type="audio/ogg">
     </audio>
 
     <div class="music-control no-print">
@@ -79,7 +78,31 @@
                     </div>
                 </div>
 
-                <button id="btn-start" class="btn-primary btn-large">🚀 開始挑戰！</button>
+                <div style="display:flex; gap:10px;">
+                    <button id="btn-start" class="btn-primary btn-large">🚀 開始挑戰！</button>
+                    <button id="btn-show-lb" class="btn-secondary btn-large">🏆 英雄榜</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Leaderboard Screen (Main) -->
+        <section id="leaderboard-screen" class="screen no-print">
+            <div class="card">
+                <h2 style="text-align:center; color: var(--secondary-hover); margin-bottom: 20px;">🎖️ 英雄榜 (Top 10)</h2>
+                <table class="lb-table">
+                    <thead>
+                        <tr>
+                            <th>名次</th>
+                            <th>名字</th>
+                            <th>積分</th>
+                            <th>時間</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lb-tbody-main">
+                        <!-- JS injected -->
+                    </tbody>
+                </table>
+                <button id="btn-close-lb" class="btn-primary btn-large">⬅️ 返回主畫面</button>
             </div>
         </section>
 
@@ -175,7 +198,7 @@
                                 <th>時間</th>
                             </tr>
                         </thead>
-                        <tbody id="lb-tbody">
+                        <tbody id="lb-tbody-result">
                             <!-- JS injected -->
                         </tbody>
                     </table>

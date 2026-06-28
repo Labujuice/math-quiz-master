@@ -25,7 +25,8 @@ const FRUITS = ['蘋果', '西瓜', '香蕉', '草莓', '葡萄', '橘子', '鳳
 const screens = {
     setup: document.getElementById('setup-screen'),
     game: document.getElementById('game-screen'),
-    result: document.getElementById('result-screen')
+    result: document.getElementById('result-screen'),
+    leaderboard: document.getElementById('leaderboard-screen')
 };
 
 const bgm = document.getElementById('bgm');
@@ -41,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function bindEvents() {
     document.getElementById('btn-start').addEventListener('click', startGame);
+    document.getElementById('btn-show-lb').addEventListener('click', () => switchScreen('leaderboard'));
+    document.getElementById('btn-close-lb').addEventListener('click', () => switchScreen('setup'));
     document.getElementById('btn-end-early').addEventListener('click', endGame);
     document.getElementById('btn-print').addEventListener('click', () => window.print());
     document.getElementById('btn-restart').addEventListener('click', restartGame);
@@ -435,24 +438,33 @@ function saveLeaderboard() {
 }
 
 function renderLeaderboard() {
-    const tbody = document.getElementById('lb-tbody');
-    tbody.innerHTML = '';
+    const tbodyMain = document.getElementById('lb-tbody-main');
+    const tbodyResult = document.getElementById('lb-tbody-result');
+    tbodyMain.innerHTML = '';
+    tbodyResult.innerHTML = '';
     
     const lb = JSON.parse(localStorage.getItem('mathQuizLeaderboard') || '[]');
     if (lb.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="4">目前還沒有紀錄喔！</td></tr>';
+        tbodyMain.innerHTML = '<tr><td colspan="4">目前還沒有紀錄喔！</td></tr>';
+        tbodyResult.innerHTML = '<tr><td colspan="4">目前還沒有紀錄喔！</td></tr>';
         return;
     }
 
     lb.forEach((item, idx) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+        const trHTML = `
             <td>${idx + 1}</td>
             <td>${item.name}</td>
             <td>${item.score}</td>
             <td>${item.time}</td>
         `;
-        tbody.appendChild(tr);
+        
+        const tr1 = document.createElement('tr');
+        tr1.innerHTML = trHTML;
+        tbodyMain.appendChild(tr1);
+        
+        const tr2 = document.createElement('tr');
+        tr2.innerHTML = trHTML;
+        tbodyResult.appendChild(tr2);
     });
 }
 
