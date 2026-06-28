@@ -79,5 +79,6 @@
 
 
 ---
-
-Apply MIT License
+## 5. Otrhers
+- Readme.md is required
+- Apply MIT License
