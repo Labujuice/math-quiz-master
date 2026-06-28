@@ -33,8 +33,6 @@ const screens = {
 };
 
 const bgm = document.getElementById('bgm');
-const sfxCorrect = document.getElementById('sfx-correct');
-const sfxWrong = document.getElementById('sfx-wrong');
 const bgmToggle = document.getElementById('bgm-toggle');
 let bgmPlaying = false;
 
@@ -328,16 +326,14 @@ function handleAnswer(userAnsStr) {
     });
 
     if (isCorrect) {
-        sfxCorrect.currentTime = 0;
-        sfxCorrect.play().catch(e=>console.log(e));
+        playCorrectSFX();
         showFeedback(true);
         // Score calculation (difficulty & operation multiplier)
         let diffMultiplier = GAME_STATE.difficulty === 3 ? 2 : (GAME_STATE.difficulty === 2 ? 1.5 : 1);
         let opMultiplier = (GAME_STATE.currentQuestionData.op === '*' || GAME_STATE.currentQuestionData.op === '/') ? 1.5 : 1;
         GAME_STATE.score += 1 * diffMultiplier * opMultiplier;
     } else {
-        sfxWrong.currentTime = 0;
-        sfxWrong.play().catch(e=>console.log(e));
+        playWrongSFX();
         showFeedback(false);
         if (GAME_STATE.ruleLife) {
             GAME_STATE.life--;
@@ -500,4 +496,71 @@ function renderLeaderboard() {
 
 function restartGame() {
     switchScreen('setup');
+}
+
+// --- WEB AUDIO API SFX SYNTHESIZERS ---
+function playCorrectSFX() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Ding (First note)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'triangle';
+        osc1.frequency.setValueAtTime(659.25, ctx.currentTime); // E5
+        gain1.gain.setValueAtTime(0.2, ctx.currentTime);
+        gain1.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.35);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start();
+        osc1.stop(ctx.currentTime + 0.35);
+
+        // Dong (Second note)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'triangle';
+        osc2.frequency.setValueAtTime(523.25, ctx.currentTime + 0.12); // C5
+        gain2.gain.setValueAtTime(0, ctx.currentTime);
+        gain2.gain.setValueAtTime(0.2, ctx.currentTime + 0.12);
+        gain2.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime + 0.12);
+        osc2.stop(ctx.currentTime + 0.6);
+    } catch (e) {
+        console.warn('AudioContext failed:', e);
+    }
+}
+
+function playWrongSFX() {
+    try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        // Ben (First buzz)
+        const osc1 = ctx.createOscillator();
+        const gain1 = ctx.createGain();
+        osc1.type = 'sawtooth';
+        osc1.frequency.setValueAtTime(130, ctx.currentTime);
+        gain1.gain.setValueAtTime(0.12, ctx.currentTime);
+        gain1.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+        osc1.connect(gain1);
+        gain1.connect(ctx.destination);
+        osc1.start();
+        osc1.stop(ctx.currentTime + 0.15);
+
+        // Ben (Second buzz)
+        const osc2 = ctx.createOscillator();
+        const gain2 = ctx.createGain();
+        osc2.type = 'sawtooth';
+        osc2.frequency.setValueAtTime(130, ctx.currentTime + 0.18);
+        gain2.gain.setValueAtTime(0, ctx.currentTime);
+        gain2.gain.setValueAtTime(0.12, ctx.currentTime + 0.18);
+        gain2.gain.linearRampToValueAtTime(0.01, ctx.currentTime + 0.33);
+        osc2.connect(gain2);
+        gain2.connect(ctx.destination);
+        osc2.start(ctx.currentTime + 0.18);
+        osc2.stop(ctx.currentTime + 0.33);
+    } catch (e) {
+        console.warn('AudioContext failed:', e);
+    }
 }
