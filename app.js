@@ -464,8 +464,8 @@ function renderLeaderboard() {
         const trHTML = `
             <td>${idx + 1}</td>
             <td>${item.name}</td>
-            <td>${item.score}</td>
             <td>${item.paperScore !== undefined ? item.paperScore : '-'}</td>
+            <td>${item.score}</td>
             <td>${item.time}</td>
         `;
         
