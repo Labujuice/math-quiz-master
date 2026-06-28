@@ -28,10 +28,13 @@ const screens = {
     setup: document.getElementById('setup-screen'),
     game: document.getElementById('game-screen'),
     result: document.getElementById('result-screen'),
-    leaderboard: document.getElementById('leaderboard-screen')
+    leaderboard: document.getElementById('leaderboard-screen'),
+    settings: document.getElementById('settings-screen')
 };
 
 const bgm = document.getElementById('bgm');
+const sfxCorrect = document.getElementById('sfx-correct');
+const sfxWrong = document.getElementById('sfx-wrong');
 const bgmToggle = document.getElementById('bgm-toggle');
 let bgmPlaying = false;
 
@@ -46,6 +49,16 @@ function bindEvents() {
     document.getElementById('btn-start').addEventListener('click', startGame);
     document.getElementById('btn-show-lb').addEventListener('click', () => switchScreen('leaderboard'));
     document.getElementById('btn-close-lb').addEventListener('click', () => switchScreen('setup'));
+    document.getElementById('btn-show-settings').addEventListener('click', () => switchScreen('settings'));
+    document.getElementById('btn-close-settings').addEventListener('click', () => switchScreen('setup'));
+    document.getElementById('bgm-volume').addEventListener('input', (e) => { bgm.volume = e.target.value; });
+    document.getElementById('btn-clear-lb').addEventListener('click', () => {
+        if(confirm('確定要清除所有排行榜紀錄嗎？')) {
+            localStorage.removeItem('mathQuizLeaderboard');
+            renderLeaderboard();
+            alert('英雄榜已清除！');
+        }
+    });
     document.getElementById('btn-end-early').addEventListener('click', endGame);
     document.getElementById('btn-print').addEventListener('click', () => window.print());
     document.getElementById('btn-restart').addEventListener('click', restartGame);
@@ -79,6 +92,8 @@ function initSetup() {
     // Generate random name if empty
     const nameInput = document.getElementById('player-name');
     nameInput.placeholder = `例如：${getRandomName()}`;
+    // Set initial volume
+    bgm.volume = document.getElementById('bgm-volume').value;
 }
 
 function getRandomName() {
@@ -313,12 +328,16 @@ function handleAnswer(userAnsStr) {
     });
 
     if (isCorrect) {
+        sfxCorrect.currentTime = 0;
+        sfxCorrect.play().catch(e=>console.log(e));
         showFeedback(true);
         // Score calculation (difficulty & operation multiplier)
         let diffMultiplier = GAME_STATE.difficulty === 3 ? 2 : (GAME_STATE.difficulty === 2 ? 1.5 : 1);
         let opMultiplier = (GAME_STATE.currentQuestionData.op === '*' || GAME_STATE.currentQuestionData.op === '/') ? 1.5 : 1;
         GAME_STATE.score += 1 * diffMultiplier * opMultiplier;
     } else {
+        sfxWrong.currentTime = 0;
+        sfxWrong.play().catch(e=>console.log(e));
         showFeedback(false);
         if (GAME_STATE.ruleLife) {
             GAME_STATE.life--;

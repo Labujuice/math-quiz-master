@@ -15,6 +15,12 @@
         <!-- 使用維基百科可靠的開源音樂 (Tetris Theme) 以確保可以跨網域讀取 -->
         <source src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Tetris_theme.ogg" type="audio/ogg">
     </audio>
+    <audio id="sfx-correct">
+        <source src="https://upload.wikimedia.org/wikipedia/commons/1/15/Ding_Dong_bell.ogg" type="audio/ogg">
+    </audio>
+    <audio id="sfx-wrong">
+        <source src="https://upload.wikimedia.org/wikipedia/commons/a/ac/Buzzer.ogg" type="audio/ogg">
+    </audio>
 
     <div class="music-control no-print">
         <button id="bgm-toggle" class="btn-icon">🔇 音樂關</button>
@@ -23,7 +29,11 @@
     <div id="app-container">
         <!-- Setup Screen -->
         <section id="setup-screen" class="screen active no-print">
-            <h1 class="title">🎈 趣味數學挑戰 🎈</h1>
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+                <button id="btn-show-settings" class="btn-icon">⚙️ 設定</button>
+                <h1 class="title" style="margin-bottom:0; flex-grow: 1;">🎈 趣味數學挑戰 🎈</h1>
+                <div style="width: 80px;"></div> <!-- Spacer for balance -->
+            </div>
             
             <div class="card setup-form">
                 <div class="form-group">
@@ -104,6 +114,21 @@
                     </tbody>
                 </table>
                 <button id="btn-close-lb" class="btn-primary btn-large">⬅️ 返回主畫面</button>
+            </div>
+        </section>
+
+        <!-- Settings Screen -->
+        <section id="settings-screen" class="screen no-print">
+            <div class="card">
+                <h2 style="text-align:center; color: var(--blue-color); margin-bottom: 20px;">⚙️ 設定</h2>
+                <div class="form-group">
+                    <label>🎵 音樂音量：</label>
+                    <input type="range" id="bgm-volume" min="0" max="1" step="0.1" value="0.5" style="width: 100%; height: 20px;">
+                </div>
+                <div class="form-group" style="text-align: center; margin-top: 40px;">
+                    <button id="btn-clear-lb" class="btn-danger btn-large">🗑️ 清除所有英雄榜紀錄</button>
+                </div>
+                <button id="btn-close-settings" class="btn-primary btn-large">⬅️ 返回主畫面</button>
             </div>
         </section>
 
