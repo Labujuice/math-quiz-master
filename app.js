@@ -113,7 +113,7 @@ function startGame() {
     // UI Updates
     document.getElementById('life-container').style.display = GAME_STATE.ruleLife ? 'block' : 'none';
     document.getElementById('life-container').textContent = '❤️❤️❤️';
-    document.getElementById('btn-end-early').style.display = (GAME_STATE.gameMode === 'infinite') ? 'block' : 'none';
+    document.getElementById('btn-end-early').style.display = 'block';
     document.getElementById('total-q-num').textContent = GAME_STATE.gameMode === 'infinite' ? '' : `/ ${GAME_STATE.gameMode}`;
     
     if (GAME_STATE.inputMode === 'choice') {
@@ -303,8 +303,10 @@ function handleAnswer(userAnsStr) {
 
     if (isCorrect) {
         showFeedback(true);
-        // Score calculation (difficulty multiplier)
-        GAME_STATE.score += GAME_STATE.difficulty * 10;
+        // Score calculation (difficulty & operation multiplier)
+        let baseScore = GAME_STATE.difficulty * 10; // 1位數:10, 2位數:20, 3位數:30
+        let opMultiplier = (GAME_STATE.currentQuestionData.op === '*' || GAME_STATE.currentQuestionData.op === '/') ? 2 : 1; // 乘除加倍
+        GAME_STATE.score += baseScore * opMultiplier;
     } else {
         showFeedback(false);
         if (GAME_STATE.ruleLife) {
@@ -368,6 +370,7 @@ function endGame() {
 
 function generatePaper() {
     document.getElementById('paper-name').textContent = GAME_STATE.playerName;
+    document.getElementById('paper-points').textContent = GAME_STATE.score;
     
     const now = new Date();
     const timeStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
