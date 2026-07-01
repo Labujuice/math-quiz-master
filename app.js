@@ -9,6 +9,7 @@ const GAME_STATE = {
     ruleDec: false,
     inputMode: 'choice', // choice, fill
     gameMode: 10, // 10, 20, 30, 'infinite'
+    ruleVertical: false,
     
     currentQ: 1,
     score: 0, // Leaderboard score
@@ -117,6 +118,7 @@ function startGame() {
     GAME_STATE.ruleNegQ = document.getElementById('rule-neg-q').checked;
     GAME_STATE.ruleNegA = document.getElementById('rule-neg-a').checked;
     GAME_STATE.ruleDec = document.getElementById('rule-dec').checked;
+    GAME_STATE.ruleVertical = document.getElementById('rule-vertical').checked;
     GAME_STATE.inputMode = document.querySelector('input[name="inputMode"]:checked').value;
     
     const gm = document.querySelector('input[name="gameMode"]:checked').value;
@@ -150,12 +152,16 @@ function startGame() {
 }
 
 // --- MATH ENGINE ---
-function generateNumber(digits, allowNegative) {
-    const min = Math.pow(10, digits - 1);
-    const max = Math.pow(10, digits) - 1;
-    let num = Math.floor(Math.random() * (max - min + 1)) + min;
-    // For 1 digit, allow 0-9
-    if (digits === 1) num = Math.floor(Math.random() * 10);
+function generateNumber(maxDigits, allowNegative) {
+    const digits = Math.floor(Math.random() * maxDigits) + 1;
+    let num;
+    if (digits === 1) {
+        num = Math.floor(Math.random() * 10);
+    } else {
+        const min = Math.pow(10, digits - 1);
+        const max = Math.pow(10, digits) - 1;
+        num = Math.floor(Math.random() * (max - min + 1)) + min;
+    }
     
     if (allowNegative && Math.random() > 0.5 && num !== 0) {
         num = -num;
@@ -239,7 +245,22 @@ function nextQuestion() {
     const qData = generateQuestion();
     GAME_STATE.currentQuestionData = qData;
 
-    document.getElementById('question-text').textContent = qData.qStr;
+    if (GAME_STATE.ruleVertical) {
+        const strA = qData.A < 0 ? `(${qData.A})` : `${qData.A}`;
+        const strB = qData.B < 0 ? `(${qData.B})` : `${qData.B}`;
+        let opStr = qData.op;
+        if (qData.op === '*') opStr = '×';
+        if (qData.op === '/') opStr = '÷';
+        
+        document.getElementById('question-text').innerHTML = `
+            <div class="vertical-math">
+                <div class="top-num">${strA}</div>
+                <div class="bottom-num"><span class="operator">${opStr}</span>${strB}</div>
+            </div>
+        `;
+    } else {
+        document.getElementById('question-text').textContent = qData.qStr;
+    }
 
     if (GAME_STATE.inputMode === 'choice') {
         renderChoices(qData.answer);
