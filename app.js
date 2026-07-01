@@ -206,12 +206,19 @@ function generateQuestion() {
             case '/':
                 if (B === 0) continue; // no division by zero
                 
+                const maxLimit = Math.pow(10, GAME_STATE.difficulty) - 1;
+                
                 if (!GAME_STATE.ruleDec) {
                     // Must be divisible
                     if (A % B !== 0) {
                         // Easy fix: A = answer * B
                         answer = A;
                         A = answer * B;
+                        
+                        // 修正：必須確保被除數 A 在最大位數以內
+                        if (Math.abs(A) > maxLimit) {
+                            continue;
+                        }
                     } else {
                         answer = A / B;
                     }
