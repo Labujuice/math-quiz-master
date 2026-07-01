@@ -154,6 +154,10 @@ function startGame() {
 // --- MATH ENGINE ---
 function generateNumber(maxDigits, allowNegative) {
     const digits = Math.floor(Math.random() * maxDigits) + 1;
+    return generateNumberWithExactDigits(digits, allowNegative);
+}
+
+function generateNumberWithExactDigits(digits, allowNegative) {
     let num;
     if (digits === 1) {
         num = Math.floor(Math.random() * 10);
@@ -175,8 +179,15 @@ function generateQuestion() {
 
     let valid = false;
     while (!valid) {
-        A = generateNumber(GAME_STATE.difficulty, GAME_STATE.ruleNegQ);
-        B = generateNumber(GAME_STATE.difficulty, GAME_STATE.ruleNegQ);
+        // 保證至少有一個數字是所選的最大位數，另一個數字隨機為最大位數以下（含）
+        const maxD = GAME_STATE.difficulty;
+        const chooseAForMax = Math.random() > 0.5;
+        
+        const digitsA = chooseAForMax ? maxD : (Math.floor(Math.random() * maxD) + 1);
+        const digitsB = !chooseAForMax ? maxD : (Math.floor(Math.random() * maxD) + 1);
+
+        A = generateNumberWithExactDigits(digitsA, GAME_STATE.ruleNegQ);
+        B = generateNumberWithExactDigits(digitsB, GAME_STATE.ruleNegQ);
 
         switch (op) {
             case '+':
@@ -254,8 +265,14 @@ function nextQuestion() {
         
         document.getElementById('question-text').innerHTML = `
             <div class="vertical-math">
-                <div class="top-num">${strA}</div>
-                <div class="bottom-num"><span class="operator">${opStr}</span>${strB}</div>
+                <div class="vertical-row">
+                    <div class="op-cell"></div>
+                    <div class="num-cell">${strA}</div>
+                </div>
+                <div class="vertical-row bottom-row">
+                    <div class="op-cell">${opStr}</div>
+                    <div class="num-cell">${strB}</div>
+                </div>
             </div>
         `;
     } else {
