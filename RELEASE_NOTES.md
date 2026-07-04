@@ -1,5 +1,17 @@
 # Release Notes - Math Quiz Master
 
+## [v1.2.1] - 2026-07-04
+
+### 🐛 聲音與相容性修復 (Sound & Compatibility Fixes)
+- **修復 Android Chrome 音訊卡死問題**:
+  - 修正每次播放答對/答錯音效都會重複新建 `AudioContext` 且未釋放的資源洩漏問題。
+  - 改用單例模式（Singleton）共用同一個 `AudioContext` 實例，避免在 Android Chrome 上達到硬體音訊通道限制時引起分頁卡死或崩潰。
+  - 在使用者點擊/答題手勢內主動呼叫 `resume()` 以符合安全播放政策。
+- **提升虛擬鍵盤觸控穩定度**:
+  - 將鍵盤事件監聽中的元素參照由 `e.target` 修改為 `e.currentTarget`，防止行動端觸控偶發性地抓取到子元素導致無法讀取鍵值。
+
+---
+
 ## [v1.2.0] - 2026-07-01
 
 ### ✨ 新增功能 (New Features)
