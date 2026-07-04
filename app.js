@@ -332,7 +332,7 @@ function renderChoices(correctAnswer) {
 let currentFillInput = '';
 function handleVKInput(e) {
     if (GAME_STATE.isProcessing) return;
-    const key = e.target.getAttribute('data-key');
+    const key = e.currentTarget.getAttribute('data-key');
     const display = document.getElementById('fill-display');
     
     if (key === 'enter') {
@@ -544,10 +544,28 @@ function restartGame() {
 }
 
 // --- WEB AUDIO API SFX SYNTHESIZERS ---
-function playCorrectSFX() {
+let globalAudioCtx = null;
+
+function getAudioContext() {
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        
+        if (!globalAudioCtx) {
+            globalAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (globalAudioCtx && globalAudioCtx.state === 'suspended') {
+            globalAudioCtx.resume();
+        }
+        return globalAudioCtx;
+    } catch (e) {
+        console.warn('AudioContext initialization failed:', e);
+        return null;
+    }
+}
+
+function playCorrectSFX() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
+    try {
         // Ding (First note)
         const osc1 = ctx.createOscillator();
         const gain1 = ctx.createGain();
@@ -573,14 +591,15 @@ function playCorrectSFX() {
         osc2.start(ctx.currentTime + 0.12);
         osc2.stop(ctx.currentTime + 0.6);
     } catch (e) {
-        console.warn('AudioContext failed:', e);
+        console.warn('SFX playback failed:', e);
     }
 }
 
 function playWrongSFX() {
+    const ctx = getAudioContext();
+    if (!ctx) return;
+
     try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        
         // Ben (First buzz)
         const osc1 = ctx.createOscillator();
         const gain1 = ctx.createGain();
@@ -606,6 +625,6 @@ function playWrongSFX() {
         osc2.start(ctx.currentTime + 0.18);
         osc2.stop(ctx.currentTime + 0.33);
     } catch (e) {
-        console.warn('AudioContext failed:', e);
+        console.warn('SFX playback failed:', e);
     }
 }
